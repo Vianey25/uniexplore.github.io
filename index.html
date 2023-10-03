@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniExplore</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json" />
+
+</head>
+<body>
+    <div class="container">
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+        <div class="info-container">
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Buscar lugar...">
+                <button id="search-button">Buscar edificio</button>
+            </div>
+            <div class="info-panel">
+                <h1>Edificio Seleccionado</h1>
+                <p>Aquí puedes mostrar información sobre el edificio C</p>
+            </div>
+        </div>
+    </div>
+    <script src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY&callback=initMap" async defer></script>
+
+    <script src="app.js"></script>
+    <script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+        .then((registration) => {
+            console.log('Service Worker registrado con éxito:', registration);
+        })
+        .catch((error) => {
+            console.error('Error al registrar el Service Worker:', error);
+        });
+}
+
+document.getElementById('search-button').addEventListener('click', () => {
+    const searchInput = document.getElementById('search-input').value.toUpperCase();
+    const selectedBuilding = buildings[searchInput];
+    
+    if (selectedBuilding) {
+        // Update the information panel with building information
+        document.querySelector('.info-panel h1').textContent = selectedBuilding.name;
+        document.querySelector('.info-panel p').textContent = selectedBuilding.description;
+
+        // Center the map on the selected building's location
+        map.setCenter(selectedBuilding.location);
+    } else {
+        // Handle the case when the building is not found
+        alert('Building not found');
+    }
+});
+
+for (const key in buildings) {
+    const building = buildings[key];
+    new google.maps.Marker({
+        position: building.location,
+        map: map,
+        title: building.name,
+    });
+}
+
+</script>
+</body>
+</html>
